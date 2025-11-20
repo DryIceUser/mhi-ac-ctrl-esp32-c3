@@ -2,6 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import binary_sensor
 from esphome.const import (
+    DEVICE_CLASS_RUNNING,
     ENTITY_CATEGORY_DIAGNOSTIC,
 )
 from . import MhiAcCtrl, CONF_MHI_AC_CTRL_ID
@@ -18,6 +19,7 @@ CONFIG_SCHEMA = cv.All(
             cv.GenerateID(): cv.declare_id(MhiAcCtrl),
             cv.GenerateID(CONF_MHI_AC_CTRL_ID): cv.use_id(MhiAcCtrl),
             cv.Optional(CONF_DEFROSTING): binary_sensor.binary_sensor_schema(
+                device_class=DEVICE_CLASS_RUNNING,
                 entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
                 icon="mdi:snowflake-melt",
             ),
