@@ -186,7 +186,8 @@ ACMode SpiState::mode_get() const {
 }
 
 bool SpiState::fan_changed() const {
-  return (this->mosi_frame_snapshot_[DB1] & FAN_MASK) != (this->mosi_frame_snapshot_prev_[DB1] & FAN_MASK);
+  return (this->mosi_frame_snapshot_[DB1] & FAN_MASK) != (this->mosi_frame_snapshot_prev_[DB1] & FAN_MASK) || \
+    (this->mosi_frame_snapshot_[DB6] & FAN_DB6_MASK) != (this->mosi_frame_snapshot_prev_[DB6] & FAN_DB6_MASK);
 }
 void SpiState::fan_set(ACFan fan) {
   xSemaphoreTake(this->miso_semaphore_handle_, portMAX_DELAY);
@@ -197,7 +198,8 @@ void SpiState::fan_set(ACFan fan) {
 }
 
 ACFan SpiState::fan_get() const {
-  uint8_t fan_value = this->mosi_frame_snapshot_[DB1] & FAN_MASK;
+  uint8_t fan_value = this->mosi_frame_snapshot_[DB1] & FAN_MASK |
+    (this->mosi_frame_snapshot_[DB6] & FAN_DB6_MASK) >> 4;
   switch(fan_value) {
     case (uint8_t) ACFan::speed_1:
     case (uint8_t) ACFan::speed_2:
@@ -206,6 +208,7 @@ ACFan SpiState::fan_get() const {
     case (uint8_t) ACFan::speed_auto:
       return (ACFan) fan_value;
     default:
+      ESP_LOGW(TAG, "Unknown fan speed: %i", fan_value);
       return ACFan::unknown;
   }
 }

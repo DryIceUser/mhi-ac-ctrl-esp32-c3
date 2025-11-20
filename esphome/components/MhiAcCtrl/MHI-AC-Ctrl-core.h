@@ -25,14 +25,8 @@
 
 #define PWR_MASK                    0x01    //DB0
 
-#define FAN_DB1_MASK                 0x03    //DB1
-#define FAN_DB6_MASK                0x10    //DB6 (for fan speed 4)
+#define FAN_DB6_MASK                0x40    // (for fan speed 4)
 #define FAN_MASK                    7
-
-#define FAN_SPEED_1                 0x00
-#define FAN_SPEED_2                 0x01
-#define FAN_SPEED_3                 0x02
-#define FAN_SPEED_4                 0x10
 
 #define HEAT_COOL_MASK              0x02            // DB13 0=Cooling, 1=Heating
 #define COMP_ACTIVE_MASK            0x04            // DB13 0=Compressor Idle, 1=Compressor Running
