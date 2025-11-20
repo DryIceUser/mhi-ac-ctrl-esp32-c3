@@ -534,12 +534,12 @@ protected:
           }
         }
 
-        if (call.get_custom_fan_mode().has_value()) {
-          auto fan_mode = *call.get_custom_fan_mode();
-          if(fan_mode == custom_fan_ultra_low) {
+        if (call.has_custom_fan_mode()) {
+          const char * fan_mode = call.get_custom_fan_mode();
+          if(std::strcmp(fan_mode, custom_fan_ultra_low) == 0) {
             mhi_ac::spi_state.fan_set(mhi_ac::ACFan::speed_1);
           } else {
-              ESP_LOGW(TAG, "Unsupported custom fan mode: %s", fan_mode.c_str());
+              ESP_LOGW(TAG, "Unsupported custom fan mode: %s", fan_mode);
           }
         } else if (call.get_fan_mode().has_value()) {
           auto fan_mode = *call.get_fan_mode();
@@ -566,15 +566,14 @@ protected:
     climate::ClimateTraits traits() override
     {
         auto traits = climate::ClimateTraits();
-        traits.set_supports_current_temperature(true);
+        traits.add_feature_flags(ClimateFeature::CLIMATE_SUPPORTS_CURRENT_TEMPERATURE);
         traits.set_supported_modes({ CLIMATE_MODE_OFF, CLIMATE_MODE_HEAT_COOL, CLIMATE_MODE_COOL, CLIMATE_MODE_HEAT, CLIMATE_MODE_DRY, CLIMATE_MODE_FAN_ONLY });
-        traits.set_supports_action(true);
-        traits.set_supports_two_point_target_temperature(false);
+        traits.add_feature_flags(ClimateFeature::CLIMATE_SUPPORTS_ACTION);
         traits.set_visual_min_temperature(this->minimum_temperature_);
         traits.set_visual_max_temperature(this->maximum_temperature_);
         traits.set_visual_temperature_step(this->temperature_step_);
         traits.set_visual_current_temperature_step(0.25);
-        traits.add_supported_custom_fan_mode(custom_fan_ultra_low);
+        traits.set_supported_custom_fan_modes({ custom_fan_ultra_low });
         traits.set_supported_fan_modes({ CLIMATE_FAN_LOW, CLIMATE_FAN_MEDIUM, CLIMATE_FAN_HIGH, CLIMATE_FAN_AUTO });
         //traits.set_supported_swing_modes({ CLIMATE_SWING_VERTICAL });
         return traits;
@@ -588,7 +587,7 @@ protected:
     // But not all: https://github.com/hberntsen/mhi-ac-ctrl-esp32-c3/issues/14#issue-2828862442, so you an override it
     // if needed in the esphome yaml
     const float temperature_step_ { 1.0f };
-    const std::string custom_fan_ultra_low = std::string("Ultra Low");
+    const char* custom_fan_ultra_low = "Ultra Low";
 
     SUB_SENSOR(climate_current_temperature)
 
