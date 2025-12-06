@@ -603,7 +603,7 @@ InitError init(const Config& config) {
 
     // Set up timer
     gptimer_config_t timer_config = {
-      .clk_src = GPTIMER_CLK_SRC_APB,
+      .clk_src = GPTIMER_CLK_SRC_DEFAULT,
       .direction = GPTIMER_COUNT_UP,
       .resolution_hz = 1000000, // Plenty of resolution to encode a rough 20ms ;)
     };
